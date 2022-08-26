@@ -58,6 +58,11 @@ class Pruner
     }
     private function wait(){
         if(isset($this->environment['INTERVAL_SECONDS']) && is_numeric($this->environment['INTERVAL_SECONDS'])){
+            $this->logger->info(sprintf(
+                "%s Waiting %d seconds for next run",
+                Emoji::timerClock(),
+                $this->environment['INTERVAL_SECONDS']
+            ));
             sleep($this->environment['INTERVAL_SECONDS']);
         }
     }
