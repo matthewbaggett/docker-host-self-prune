@@ -1,0 +1,31 @@
+{
+    "name": "matthewbaggett/docker-host-self-prune",
+    "type": "project",
+    "require": {
+        "php": ">8.1",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "kint-php/kint": "^3",
+        "vanilla/garden-cli": "~2.0",
+        "monolog/monolog": "^2.2",
+        "bramus/monolog-colored-line-formatter": "~3.0",
+        "rych/bytesize": "^1.0",
+        "guzzlehttp/guzzle": "^7.4",
+        "spatie/emoji": "^2.3"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "license": "GPL",
+    "autoload": {
+        "psr-4": {
+            "Prune\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Matthew Baggett",
+            "email": "matthew@baggett.me"
+        }
+    ]
+}
