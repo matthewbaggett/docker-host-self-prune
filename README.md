@@ -16,6 +16,6 @@ docker service create \
     --mode=global \
     --env INTERVAL_SECONDS=86400 \
     --restart-max-attempts=0 \
-    --restart-condition=any
+    --restart-condition=any \
         matthewbaggett/pruner
 ```
