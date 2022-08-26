@@ -14,5 +14,8 @@ docker service create \
     --name pruner \
     --mount type=bind,source=/var/run/docker.sock,destination=/var/run/docker.sock \
     --mode=global \
+    --env INTERVAL_SECONDS=86400 \
+    --restart-max-attempts=0 \
+    --restart-condition=any
         matthewbaggett/pruner
 ```
