@@ -48,7 +48,7 @@ class Pruner
         $pruneResponse = json_decode($this->client->request('POST', "/{$type}/prune")->getBody()->getContents(), true);
         #\Kint::dump($pruneResponse);
         $this->logger->info(sprintf(
-            "%s Pruned %d %s and freed %s in %d seconds",
+            "%s  Pruned %d %s and freed %s in %d seconds",
             Emoji::recyclingSymbol(),
             isset($pruneResponse[ucfirst($type) . 'Deleted']) ? count($pruneResponse[ucfirst($type) . 'Deleted']) : 0,
             $type,
