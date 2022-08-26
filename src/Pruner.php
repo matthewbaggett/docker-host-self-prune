@@ -3,11 +3,11 @@
 namespace Prune;
 
 use Bramus\Monolog\Formatter\ColoredLineFormatter;
+use GuzzleHttp\Client as Guzzle;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Rych\ByteSize\ByteSize;
 use Spatie\Emoji\Emoji;
-use GuzzleHttp\Client as Guzzle;
 
 class Pruner
 {
@@ -35,42 +35,45 @@ class Pruner
             $this->logger->info(sprintf('%s Connecting to /var/run/docker.sock', Emoji::electricPlug()));
             $this->client = new Guzzle(['base_uri' => 'http://localhost', 'curl' => [CURLOPT_UNIX_SOCKET_PATH => '/var/run/docker.sock']]);
         }
-
     }
 
-    private function prune($type){
+    public function run(): void
+    {
+        $this->prune('containers');
+        $this->prune('networks');
+        $this->prune('volumes');
+        $this->wait();
+    }
+
+    private function prune($type): void
+    {
         $pruneStart = microtime(true);
         $this->logger->debug(sprintf(
-            "%s Pruning %s...",
+            '%s Pruning %s...',
             Emoji::magnifyingGlassTiltedLeft(),
             $type
         ));
         $pruneResponse = json_decode($this->client->request('POST', "/{$type}/prune")->getBody()->getContents(), true);
-        #\Kint::dump($pruneResponse);
+        // \Kint::dump($pruneResponse);
         $this->logger->info(sprintf(
-            "%s  Pruned %d %s and freed %s in %d seconds",
+            '%s  Pruned %d %s and freed %s in %d seconds',
             Emoji::recyclingSymbol(),
-            isset($pruneResponse[ucfirst($type) . 'Deleted']) ? count($pruneResponse[ucfirst($type) . 'Deleted']) : 0,
+            isset($pruneResponse[ucfirst($type).'Deleted']) ? count($pruneResponse[ucfirst($type).'Deleted']) : 0,
             $type,
-            ByteSize::formatMetric($pruneResponse['SpaceReclaimed']??0),
-            microtime(true)-$pruneStart
+            ByteSize::formatMetric($pruneResponse['SpaceReclaimed'] ?? 0),
+            microtime(true) - $pruneStart
         ));
     }
-    private function wait(){
-        if(isset($this->environment['INTERVAL_SECONDS']) && is_numeric($this->environment['INTERVAL_SECONDS'])){
+
+    private function wait(): void
+    {
+        if (isset($this->environment['INTERVAL_SECONDS']) && is_numeric($this->environment['INTERVAL_SECONDS'])) {
             $this->logger->info(sprintf(
-                "%s Waiting %d seconds for next run",
+                '%s  Waiting %d seconds for next run',
                 Emoji::timerClock(),
                 $this->environment['INTERVAL_SECONDS']
             ));
             sleep($this->environment['INTERVAL_SECONDS']);
         }
-    }
-    public function run(): void
-    {
-        $this->prune("containers");
-        $this->prune("networks");
-        $this->prune("volumes");
-        $this->wait();
     }
 }
